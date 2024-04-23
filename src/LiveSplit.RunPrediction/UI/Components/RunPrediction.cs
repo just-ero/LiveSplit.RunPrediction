@@ -1,12 +1,13 @@
-﻿using LiveSplit.Model;
-using LiveSplit.Model.Comparisons;
-using LiveSplit.TimeFormatters;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Windows.Forms;
+
+using LiveSplit.Model;
+using LiveSplit.Model.Comparisons;
+using LiveSplit.TimeFormatters;
 
 namespace LiveSplit.UI.Components
 {
@@ -22,7 +23,7 @@ namespace LiveSplit.UI.Components
         public float PaddingBottom => InternalComponent.PaddingBottom;
         public float PaddingRight => InternalComponent.PaddingRight;
 
-        public IDictionary<string, Action> ContextMenuControls => null; 
+        public IDictionary<string, Action> ContextMenuControls => null;
 
         public RunPrediction(LiveSplitState state)
         {
@@ -35,7 +36,7 @@ namespace LiveSplit.UI.Components
             state.ComparisonRenamed += state_ComparisonRenamed;
         }
 
-        void state_ComparisonRenamed(object sender, EventArgs e)
+        private void state_ComparisonRenamed(object sender, EventArgs e)
         {
             var args = (RenameEventArgs)e;
             if (Settings.Comparison == args.OldName)
@@ -49,7 +50,7 @@ namespace LiveSplit.UI.Components
         {
             InternalComponent.DisplayTwoRows = Settings.Display2Rows;
 
-            InternalComponent.NameLabel.HasShadow 
+            InternalComponent.NameLabel.HasShadow
                 = InternalComponent.ValueLabel.HasShadow
                 = state.LayoutSettings.DropShadows;
 
@@ -62,8 +63,8 @@ namespace LiveSplit.UI.Components
         private void DrawBackground(Graphics g, LiveSplitState state, float width, float height)
         {
             if (Settings.BackgroundColor.A > 0
-                || Settings.BackgroundGradient != GradientType.Plain
-                && Settings.BackgroundColor2.A > 0)
+                || (Settings.BackgroundGradient != GradientType.Plain
+                && Settings.BackgroundColor2.A > 0))
             {
                 var gradientBrush = new LinearGradientBrush(
                             new PointF(0, 0),
@@ -120,7 +121,7 @@ namespace LiveSplit.UI.Components
 
         protected string GetDisplayedName(string comparison)
         {
-            switch(comparison)
+            switch (comparison)
             {
                 case "Current Comparison":
                     return "Current Pace";
@@ -142,21 +143,21 @@ namespace LiveSplit.UI.Components
             switch (comparison)
             {
                 case "Current Comparison":
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Cur. Pace",
                         "Pace"
                     };
                     break;
                 case Run.PersonalBestComparisonName:
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Cur. Pace",
                         "Pace"
                     };
                     break;
                 case BestSegmentsComparisonGenerator.ComparisonName:
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Best Poss. Time",
                         "Best Time",
@@ -164,20 +165,20 @@ namespace LiveSplit.UI.Components
                     };
                     break;
                 case WorstSegmentsComparisonGenerator.ComparisonName:
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Worst Poss. Time",
                         "Worst Time"
                     };
                     break;
                 case AverageSegmentsComparisonGenerator.ComparisonName:
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Pred. Time",
                     };
                     break;
                 default:
-                    InternalComponent.AlternateNameText = new []
+                    InternalComponent.AlternateNameText = new[]
                     {
                         "Current Pace",
                         "Cur. Pace",
@@ -191,7 +192,9 @@ namespace LiveSplit.UI.Components
         {
             var comparison = Settings.Comparison == "Current Comparison" ? state.CurrentComparison : Settings.Comparison;
             if (!state.Run.Comparisons.Contains(comparison))
+            {
                 comparison = state.CurrentComparison;
+            }
 
             InternalComponent.InformationName = InternalComponent.LongestString = GetDisplayedName(comparison);
 
@@ -210,7 +213,10 @@ namespace LiveSplit.UI.Components
                 TimeSpan? delta = LiveSplitStateHelper.GetLastDelta(state, state.CurrentSplitIndex, comparison, state.CurrentTimingMethod) ?? TimeSpan.Zero;
                 var liveDelta = state.CurrentTime[state.CurrentTimingMethod] - state.CurrentSplit.Comparisons[comparison][state.CurrentTimingMethod];
                 if (liveDelta > delta)
+                {
                     delta = liveDelta;
+                }
+
                 InternalComponent.TimeValue = delta + state.Run.Last().Comparisons[comparison][state.CurrentTimingMethod];
             }
             else if (state.CurrentPhase == TimerPhase.Ended)
@@ -229,6 +235,9 @@ namespace LiveSplit.UI.Components
         {
         }
 
-        public int GetSettingsHashCode() => Settings.GetSettingsHashCode();
+        public int GetSettingsHashCode()
+        {
+            return Settings.GetSettingsHashCode();
+        }
     }
 }
